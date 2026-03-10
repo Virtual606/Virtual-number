@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول | Virtual Numbers</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="shortcut icon" href="logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Tajawal:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bd:#050b18;--dark:#0a1220;--mid:#0f1e3a;
+    --el:#2563eb;--glow:#60a5fa;--cyan:#06b6d4;
+    --white:#f0f7ff;--gray:#6b8ab5;--gray-l:#94afd4;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Tajawal',sans-serif;
+    background:var(--bd);color:var(--white);
+    min-height:100vh;display:flex;flex-direction:column;
+    overflow-x:hidden;
+  }
+  .bg{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(ellipse 70% 70% at 15% 20%,rgba(37,99,235,0.2) 0%,transparent 65%),
+      radial-gradient(ellipse 50% 50% at 85% 80%,rgba(6,182,212,0.13) 0%,transparent 55%);
+  }
+  .grid{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(rgba(37,99,235,0.045) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.045) 1px,transparent 1px);
+    background-size:55px 55px;
+  }
+
+  header{
+    position:relative;z-index:10;
+    padding:1.2rem 2rem;
+    border-bottom:1px solid rgba(37,99,235,0.18);
+    background:rgba(5,11,24,0.85);backdrop-filter:blur(16px);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo-main{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;letter-spacing:4px;}
+  .logo-main span{color:var(--el);}
+  .logo-wrap{display:flex;align-items:center;gap:0.6rem;}
+  .logo-img{width:38px;height:38px;border-radius:9px;flex-shrink:0;}
+  .logo-text{display:flex;flex-direction:column;gap:2px;}
+  .logo-meta{
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;color:var(--gray-l);letter-spacing:2px;margin-top:2px;
+    display:flex;align-items:center;gap:4px;flex-wrap:wrap;
+  }
+  .logo-meta .hawwy{color:#e0f2fe;font-weight:700;font-size:0.7rem;}
+  .logo-meta b{color:var(--cyan);font-size:0.7rem;}
+  .logo-meta .dev{
+    font-family:'Space Mono',monospace;
+    font-weight:700;font-size:0.68rem;
+    color:#38bdf8;
+    text-shadow:0 0 8px rgba(56,189,248,0.9), 0 0 18px rgba(56,189,248,0.6), 0 0 32px rgba(37,99,235,0.5);
+    letter-spacing:1px;
+  }
+  .back-link{
+    color:var(--gray-l);font-size:0.85rem;text-decoration:none;
+    display:flex;align-items:center;gap:0.4rem;transition:color 0.2s;
+  }
+  .back-link:hover{color:var(--white);}
+
+  main{
+    flex:1;display:flex;align-items:center;justify-content:center;
+    padding:3rem 1rem;position:relative;z-index:1;
+  }
+
+  .auth-box{
+    width:100%;max-width:420px;
+    background:linear-gradient(145deg,rgba(15,30,58,0.9),rgba(10,18,32,0.95));
+    border:1px solid rgba(37,99,235,0.25);
+    border-radius:22px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(37,99,235,0.15);
+  }
+
+  .tabs{
+    display:flex;
+    border-bottom:1px solid rgba(37,99,235,0.18);
+  }
+  .tab{
+    flex:1;padding:1.1rem;text-align:center;
+    font-family:'Tajawal',sans-serif;font-size:0.92rem;font-weight:600;
+    cursor:pointer;transition:all 0.22s;
+    color:var(--gray);background:transparent;border:none;
+    position:relative;
+  }
+  .tab::after{
+    content:'';position:absolute;bottom:0;left:0;right:0;
+    height:2px;background:var(--el);transform:scaleX(0);transition:transform 0.22s;
+  }
+  .tab.active{color:var(--white);}
+  .tab.active::after{transform:scaleX(1);}
+
+  .form-wrap{padding:2rem;}
+
+  .form-title{
+    font-family:'Orbitron',monospace;
+    font-size:1.05rem;font-weight:700;
+    color:var(--white);margin-bottom:0.4rem;
+  }
+  .form-sub{font-size:0.82rem;color:var(--gray);margin-bottom:1.6rem;}
+
+  .fg{margin-bottom:1rem;}
+  .fg label{
+    display:flex;align-items:center;gap:0.4rem;
+    font-size:0.82rem;color:var(--gray-l);margin-bottom:0.38rem;
+  }
+  .inp{
+    width:100%;
+    background:rgba(37,99,235,0.08);
+    border:1px solid rgba(37,99,235,0.2);
+    border-radius:9px;padding:0.68rem 1rem;
+    color:var(--white);font-family:'Tajawal',sans-serif;
+    font-size:0.9rem;outline:none;transition:all 0.22s;
+  }
+  .inp:focus{border-color:var(--el);background:rgba(37,99,235,0.12);}
+  .inp::placeholder{color:var(--gray);}
+
+  .pass-wrap{position:relative;}
+  .pass-wrap .inp{padding-left:3rem;}
+  .pass-toggle{
+    position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);
+    background:none;border:none;cursor:pointer;
+    color:var(--gray);font-size:0.9rem;transition:color 0.2s;
+  }
+  .pass-toggle:hover{color:var(--white);}
+
+  .err-msg{
+    background:rgba(239,68,68,0.12);
+    border:1px solid rgba(239,68,68,0.28);
+    border-radius:8px;padding:0.7rem 1rem;
+    font-size:0.82rem;color:#f87171;
+    margin-bottom:1rem;display:none;
+  }
+  .err-msg.show{display:block;}
+
+  .suc-msg{
+    background:rgba(34,197,94,0.12);
+    border:1px solid rgba(34,197,94,0.28);
+    border-radius:8px;padding:0.7rem 1rem;
+    font-size:0.82rem;color:#4ade80;
+    margin-bottom:1rem;display:none;
+  }
+  .suc-msg.show{display:block;}
+
+  .sub-btn{
+    width:100%;
+    background:linear-gradient(135deg,var(--el),#0891b2);
+    border:none;border-radius:10px;
+    padding:0.88rem;color:#fff;
+    font-family:'Tajawal',sans-serif;
+    font-size:0.95rem;font-weight:700;
+    cursor:pointer;transition:all 0.22s;margin-top:0.5rem;
+    display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  }
+  .sub-btn:hover{opacity:0.85;transform:translateY(-1px);}
+  .sub-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+  .divider{
+    display:flex;align-items:center;gap:1rem;
+    margin:1.3rem 0;
+  }
+  .divider::before,.divider::after{
+    content:'';flex:1;height:1px;background:rgba(37,99,235,0.18);
+  }
+  .divider span{font-size:0.75rem;color:var(--gray);}
+
+  .form-panel{display:none;}
+  .form-panel.active{display:block;}
+
+  footer{
+    position:relative;z-index:1;
+    text-align:center;padding:1.5rem;
+    color:var(--gray);font-size:0.78rem;
+    border-top:1px solid rgba(37,99,235,0.12);
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="grid"></div>
+
+<header>
+  <div class="logo-wrap">
+    
+    <div class="logo-text">
+      <div class="logo-main">Virtual <span>Numbers</span></div>
+      <div class="logo-meta"><span class="hawwy">الحاوي</span> &amp; Æ <b>Revaldo</b> | <span class="dev">تطوير: احمد السيد</span></div>
+    </div>
+  </div>
+  <a href="index.html" class="back-link">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    العودة للمتجر
+  </a>
+</header>
+
+<main>
+  <div class="auth-box">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">تسجيل الدخول</button>
+      <button class="tab" onclick="switchTab('register')">إنشاء حساب</button>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div class="form-panel active" id="loginPanel">
+      <div class="form-wrap">
+        <div class="form-title">مرحباً بعودتك 👋</div>
+        <div class="form-sub">سجّل دخولك لمتابعة طلباتك وأرقامك</div>
+        <div class="err-msg" id="loginErr"></div>
+        <div class="suc-msg" id="loginSuc"></div>
+        <div class="fg">
+          <label>📧 البريد الإلكتروني</label>
+          <input class="inp" id="loginEmail" type="email" placeholder="example@email.com">
+        </div>
+        <div class="fg">
+          <label>🔒 كلمة المرور</label>
+          <div class="pass-wrap">
+            <input class="inp" id="loginPass" type="password" placeholder="••••••••">
+            <button class="pass-toggle" onclick="togglePass('loginPass',this)" type="button">👁</button>
+          </div>
+        </div>
+        <button class="sub-btn" id="loginBtn" onclick="doLogin()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          دخول
+        </button>
+      </div>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div class="form-panel" id="registerPanel">
+      <div class="form-wrap">
+        <div class="form-title">انشئ حسابك الآن ✨</div>
+        <div class="form-sub">سجّل مجاناً واحصل على أرقامك الافتراضية</div>
+        <div class="err-msg" id="regErr"></div>
+        <div class="suc-msg" id="regSuc"></div>
+        <div class="fg">
+          <label>👤 الاسم الكامل</label>
+          <input class="inp" id="regName" type="text" placeholder="اسمك ياحب 😊">
+        </div>
+        <div class="fg">
+          <label>📧 البريد الإلكتروني</label>
+          <input class="inp" id="regEmail" type="email" placeholder="example@email.com">
+        </div>
+        <div class="fg">
+          <label>🔒 كلمة المرور</label>
+          <div class="pass-wrap">
+            <input class="inp" id="regPass" type="password" placeholder="8 أحرف على الأقل">
+            <button class="pass-toggle" onclick="togglePass('regPass',this)" type="button">👁</button>
+          </div>
+        </div>
+        <button class="sub-btn" id="regBtn" onclick="doRegister()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          إنشاء الحساب
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2025 Virtual Numbers | الحاوي &amp; Æ Revaldo</footer>
+
+<script>
+const SB='https://kxfdiesptebaxtwszyci.supabase.co';
+const KEY='sb_publishable_s8DM3yJ2pR07saN6cxdtmQ_Mn4URlYf';
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(t==='login'&&i===0)||(t==='register'&&i===1)));
+  document.getElementById('loginPanel').classList.toggle('active',t==='login');
+  document.getElementById('registerPanel').classList.toggle('active',t==='register');
+}
+
+function togglePass(id,btn){
+  const inp=document.getElementById(id);
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁':'🙈';
+}
+
+function showErr(id,msg){
+  const el=document.getElementById(id);
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+function showSuc(id,msg){
+  const el=document.getElementById(id);
+  el.textContent=msg;el.classList.add('show');
+}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){showErr('loginErr','يرجى ملء جميع الحقول');return;}
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='جاري التحقق...';
+  try{
+    const r=await fetch(`${SB}/auth/v1/token?grant_type=password`,{
+      method:'POST',
+      headers:{'apikey':KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pass})
+    });
+    const d=await r.json();
+    if(r.ok&&d.access_token){
+      // جيب بيانات المستخدم الكاملة عشان نطلع الاسم
+      let userData = d.user;
+      try{
+        const ur = await fetch(`${SB}/auth/v1/user`,{
+          headers:{'apikey':KEY,'Authorization':`Bearer ${d.access_token}`}
+        });
+        if(ur.ok) userData = await ur.json();
+      }catch(e){}
+      localStorage.setItem('vn_token',d.access_token);
+      localStorage.setItem('vn_user',JSON.stringify(userData));
+      showSuc('loginSuc','✅ تم تسجيل الدخول بنجاح! جاري التحويل...');
+      setTimeout(()=>location.href='index.html',1500);
+    }else{
+      showErr('loginErr',d.error_description||'البريد أو كلمة المرور غير صحيحة');
+    }
+  }catch(e){showErr('loginErr','حدث خطأ في الاتصال، حاول مرة أخرى');}
+  btn.disabled=false;
+  btn.innerHTML='<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> دخول';
+}
+
+async function doRegister(){
+  const name=document.getElementById('regName').value.trim();
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPass').value;
+  if(!name||!email||!pass){showErr('regErr','يرجى ملء جميع الحقول');return;}
+  if(pass.length<8){showErr('regErr','كلمة المرور يجب أن تكون 8 أحرف على الأقل');return;}
+  const btn=document.getElementById('regBtn');
+  btn.disabled=true;btn.textContent='جاري الإنشاء...';
+  try{
+    const r=await fetch(`${SB}/auth/v1/signup`,{
+      method:'POST',
+      headers:{'apikey':KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pass,data:{full_name:name}})
+    });
+    const d=await r.json();
+    if(r.ok&&(d.user||d.id)){
+      showSuc('regSuc','✅ تم إنشاء حسابك! يمكنك تسجيل الدخول الآن.');
+      setTimeout(()=>switchTab('login'),2000);
+    }else{
+      showErr('regErr',d.error_description||d.msg||'حدث خطأ، ربما البريد مسجّل مسبقاً');
+    }
+  }catch(e){showErr('regErr','حدث خطأ في الاتصال');}
+  btn.disabled=false;
+  btn.innerHTML='<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> إنشاء الحساب';
+}
+</script>
+</body>
+</html>
