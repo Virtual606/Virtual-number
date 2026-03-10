@@ -62,10 +62,15 @@
   .logo-text{display:flex;flex-direction:column;gap:2px;}
   .logo-main{
     font-family:'Orbitron',monospace;
-    font-size:1.1rem;font-weight:900;letter-spacing:4px;
+    font-size:1.1rem;font-weight:900;letter-spacing:3px;
     color:var(--white);text-transform:uppercase;
   }
   .logo-main span{color:var(--blue-electric);}
+  @media(max-width:680px){
+    .logo-main{font-size:0.95rem;letter-spacing:2px;}
+    .logo-meta{font-size:0.55rem;letter-spacing:1px;}
+    .logo-meta .hawwy,.logo-meta b,.logo-meta .dev{font-size:0.58rem;}
+  }
   .logo-meta{
     font-family:'Space Mono',monospace;
     font-size:0.65rem;color:var(--gray-light);letter-spacing:2px;
@@ -1088,10 +1093,123 @@ async function submitOrder(){
   }catch(e){}
   cart=[];localStorage.setItem('vn_cart','[]');
   closeModal();render();
-  toast('🎉 تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً');
+  // افتح البوت وابدأ رحلة الدفع
+  openPaymentBot(name, tot);
 }
 
-function toast(msg){
+function openPaymentBot(name, total){
+  // افتح البوت
+  if(!chatOpen){ toggleChat(); }
+  // امسح المحادثة القديمة وابدأ رحلة الدفع
+  const body = document.getElementById('chatBody');
+  body.innerHTML = '';
+  firstOpen = false;
+
+  setTimeout(()=>{
+    addBotMsg(`✅ تم استلام طلبك يا ${name}!\nالمبلغ المطلوب: **${total} ج.م**`, false);
+  }, 400);
+
+  setTimeout(()=>{
+    addBotMsg('دلوقتي اختار طريقة الدفع 👇', false, ['💚 فودافون كاش', '🔵 PayPal']);
+  }, 1100);
+}
+
+// معالج اختيار طريقة الدفع
+const _origHandleQuick = typeof handleQuick !== 'undefined' ? handleQuick : null;
+
+function handleQuick(btn){
+  addUserMsg(btn);
+  if(btn === '💚 فودافون كاش'){
+    setTimeout(()=>{
+      addBotMsg('💚 فودافون كاش\n━━━━━━━━━━━\n📱 الرقم: **01553035020**\n\nحوّل المبلغ وبعدين ابعت الـ screenshot هنا أو على واتساب 👇', false);
+      setTimeout(()=>showPaymentUpload(), 800);
+    }, 300);
+  } else if(btn === '🔵 PayPal'){
+    setTimeout(()=>{
+      addBotMsg('🔵 PayPal\n━━━━━━━━━━━\n📧 الإيميل: **virtualnum@paypal.com**\n\nبعد التحويل ابعت الـ screenshot هنا أو على واتساب 👇', false);
+      setTimeout(()=>showPaymentUpload(), 800);
+    }, 300);
+  } else if(btn.includes('الأسعار') || btn.includes('سعر')){
+    setTimeout(()=>addBotMsg(botReplies.prices, true, ['📱 الأرقام المتاحة','💳 طريقة الدفع','📞 تواصل معانا']), 300);
+  } else if(btn.includes('الأرقام') || btn.includes('متاح')){
+    setTimeout(()=>addBotMsg(botReplies.numbers, true, ['💰 الأسعار','💳 طريقة الدفع','📞 تواصل معانا']), 300);
+  } else if(btn.includes('الدفع') || btn.includes('دفع')){
+    setTimeout(()=>addBotMsg(botReplies.payment, true, ['📞 تواصل معانا']), 300);
+  } else if(btn.includes('تواصل') || btn.includes('واتساب')){
+    setTimeout(()=>{
+      addBotMsg(botReplies.contact, true);
+      setTimeout(()=>showWaOptions(), 1200);
+    }, 300);
+  }
+}
+
+function showPaymentUpload(){
+  const body = document.getElementById('chatBody');
+  const d = document.createElement('div');
+  d.style.alignSelf = 'flex-start';
+  d.style.width = '100%';
+  d.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.3rem;">
+      <label style="
+        display:flex;align-items:center;justify-content:center;gap:0.5rem;
+        background:linear-gradient(135deg,rgba(37,99,235,0.2),rgba(6,182,212,0.15));
+        border:1.5px dashed rgba(37,99,235,0.4);
+        border-radius:10px;padding:0.75rem;cursor:pointer;
+        color:#60a5fa;font-size:0.82rem;font-weight:600;
+        transition:all 0.2s;
+      " onmouseover="this.style.background='rgba(37,99,235,0.25)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(37,99,235,0.2),rgba(6,182,212,0.15))'">
+        📸 ارفع الـ screenshot هنا
+        <input type="file" accept="image/*" style="display:none" onchange="handleScreenshot(this)">
+      </label>
+      <div style="text-align:center;font-size:0.72rem;color:#6b8ab5;">أو ابعت على واتساب مباشرة</div>
+      <div style="display:flex;gap:0.4rem;">
+        <a href="https://wa.me/201553035020" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.3rem;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:0.45rem;color:#4ade80;font-size:0.75rem;font-weight:600;text-decoration:none;">
+          📱 المطور
+        </a>
+        <a href="https://wa.me/201010564885" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.3rem;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:0.45rem;color:#4ade80;font-size:0.75rem;font-weight:600;text-decoration:none;">
+          📱 الحاوي
+        </a>
+      </div>
+    </div>`;
+  body.appendChild(d);
+  scrollChat();
+}
+
+async function handleScreenshot(input){
+  const file = input.files[0];
+  if(!file) return;
+  const body = document.getElementById('chatBody');
+
+  // اعرض preview
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    const d = document.createElement('div');
+    d.style.alignSelf = 'flex-end';
+    d.innerHTML = `<img src="${e.target.result}" style="max-width:180px;border-radius:10px;border:1px solid rgba(37,99,235,0.3);">`;
+    body.appendChild(d);
+    scrollChat();
+
+    // رسالة تأكيد
+    setTimeout(()=>{
+      addBotMsg('✅ تم استلام الـ screenshot!\nهنراجعه وهنأكدلك الطلب في أقرب وقت 🙏\nشكراً لثقتك فينا 💙', false);
+    }, 600);
+
+    // حفظ في Supabase
+    try{
+      const base64 = e.target.result.split(',')[1];
+      await fetch(`${SB_URL}/rest/v1/payment_proofs`, {
+        method:'POST',
+        headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body: JSON.stringify({
+          screenshot_base64: base64,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        })
+      });
+    }catch(e){}
+  };
+  reader.readAsDataURL(file);
+}
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
