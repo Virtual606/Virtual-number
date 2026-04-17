@@ -102,6 +102,10 @@ header{position:sticky;top:0;z-index:900;background:rgba(5,11,24,.92);backdrop-f
 .wish-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:9px;cursor:pointer;color:var(--gray);transition:all .2s;}
 .wish-btn:hover,.wish-btn.on{color:#f43f5e;border-color:rgba(244,63,94,.4);}
 .sold-tag{position:absolute;top:.8rem;left:.8rem;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:50px;padding:.2rem .55rem;color:#f87171;font-size:.63rem;font-weight:700;letter-spacing:1px;}
+.best-tag{position:absolute;top:.8rem;right:.8rem;background:linear-gradient(135deg,rgba(251,146,60,.25),rgba(239,68,68,.2));border:1px solid rgba(251,146,60,.5);border-radius:50px;padding:.2rem .65rem;color:#fb923c;font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;box-shadow:0 0 10px rgba(251,146,60,.2);}
+.best-section-wrap{border:1px solid rgba(251,146,60,.25);border-radius:20px;padding:1.5rem;background:linear-gradient(145deg,rgba(251,146,60,.04),rgba(239,68,68,.03));position:relative;overflow:hidden;}
+.best-section-wrap::before{content:'';position:absolute;inset:0;border-radius:20px;background:linear-gradient(135deg,rgba(251,146,60,.06),transparent 60%);pointer-events:none;}
+.best-badge{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,#f97316,#ef4444);border-radius:50px;padding:.35rem 1rem;font-size:.75rem;font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;box-shadow:0 4px 15px rgba(249,115,22,.35);margin-bottom:1rem;}
 .no-res{grid-column:1/-1;text-align:center;padding:3rem;color:var(--gray);}
 .no-res .ei{font-size:2.5rem;opacity:.35;margin-bottom:.8rem;}
 
@@ -251,6 +255,18 @@ footer b{color:var(--glow);}
   </div>
 </div>
 
+<!-- PL SECTION - BEST SELLER -->
+<div class="section">
+  <div class="best-section-wrap">
+    <div class="best-badge">🔥 Best Sellers</div>
+    <div class="sec-title">
+      <h2>🇵🇱 أرقام بولندية</h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="grid" id="plGrid"></div>
+  </div>
+</div>
+
 <!-- US SECTION -->
 <div class="section">
   <div class="sec-title">
@@ -346,8 +362,8 @@ footer b{color:var(--glow);}
 </div>
 
 <script>
-const SB_URL='https://kxfdiesptebaxtwszyci.supabase.co';
-const SB_KEY='sb_publishable_s8DM3yJ2pR07saN6cxdtmQ_Mn4URlYf';
+const SB_URL='https://gddaxnkgopmrkvtyhvzh.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkZGF4bmtnb3Btcmt2dHlodnpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MzUyOTEsImV4cCI6MjA5MjAxMTI5MX0.3UhMTsHLsFwo0PyGbAiPDH8f-pki-6VQZEuMDkTZLIw';
 
 let products=[];
 let cart=JSON.parse(localStorage.getItem('vn_cart')||'[]');
@@ -378,18 +394,20 @@ async function loadProducts(){
 function render(){
   const q=document.getElementById('searchInput').value.toLowerCase();
   const f=p=>!q||p.name?.includes(q)||p.number?.includes(q)||p.description?.includes(q);
+  renderGrid('plGrid',products.filter(p=>p.country==='pl'&&f(p)),true);
   renderGrid('usGrid',products.filter(p=>p.country==='us'&&f(p)));
   renderGrid('caGrid',products.filter(p=>p.country==='ca'&&f(p)));
   updateBadges();
 }
 
-function renderGrid(id,list){
+function renderGrid(id,list,bestSeller=false){
   const g=document.getElementById(id);
   if(!list.length){g.innerHTML='<div class="no-res"><div class="ei">📭</div><p>لا توجد أرقام متاحة</p></div>';return;}
   g.innerHTML=list.map(p=>`
     <div class="card">
       ${!p.available?'<div class="sold-tag">مُباع</div>':''}
-      <div class="card-flag">${p.country==='us'?'🇺🇸':'🇨🇦'}</div>
+      ${bestSeller&&p.available?'<div class="best-tag">🔥 Best Seller</div>':''}
+      <div class="card-flag">${p.country==='us'?'🇺🇸':p.country==='ca'?'🇨🇦':'🇵🇱'}</div>
       <div class="card-name">${p.name||''}</div>
       <div class="card-num">${p.number||''}</div>
       <div class="card-desc">${p.description||''}</div>
